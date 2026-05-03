@@ -1,5 +1,5 @@
 import express from 'express';
-import { PORT,NODE_ENV } from './config/env.js';
+import { PORT,NODE_ENV , ARCJET_ENV } from './config/env.js';
 import userRouter from './routes/user.routes.js';
 import subsRouter from './routes/subscription.routes.js';
 import authRouter from './routes/auth.routes.js';
@@ -16,7 +16,10 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use(cookieParser());
 app.use(errorMiddleware);
-app.use(arcjetMiddleware);
+
+if(ARCJET_ENV != "development"){
+    app.use(arcjetMiddleware);
+}
 
 // routes
 app.use('/api/v1/users',userRouter);

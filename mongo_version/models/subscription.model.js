@@ -1,6 +1,5 @@
 import { Timestamp } from "mongodb";
 import mongoose from "mongoose";
-import { validate } from './../../node_modules/@types/json-schema/index.d';
 
 const subscriptionSchema = new mongoose.Schema({
     name:
