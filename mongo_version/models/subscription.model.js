@@ -1,4 +1,3 @@
-import { Timestamp } from "mongodb";
 import mongoose from "mongoose";
 
 const subscriptionSchema = new mongoose.Schema({
@@ -78,7 +77,7 @@ const subscriptionSchema = new mongoose.Schema({
 },{timestamps:true});
 
 // auto calculate renewal date if missing 
-subscriptionSchema.pre('save', function(next){
+subscriptionSchema.pre('save', function(){
     if(!this.renewalDate){
         const renewalPeriod = {
             daily: 1,
@@ -94,11 +93,9 @@ subscriptionSchema.pre('save', function(next){
     }
 
     if(this.renewalDate < new Date()){
-        // return next(new Error("Renewal date cannot be before start date"));
         this.status = "expired";
     }
 
-    next();
 });
 
 const Subscription = mongoose.model("Subscription", subscriptionSchema);
