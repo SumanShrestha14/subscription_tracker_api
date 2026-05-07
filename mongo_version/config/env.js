@@ -13,5 +13,12 @@ export const {
      ARCJET_ENV,
      QSTASH_URL,
      QSTASH_TOKEN,
-     SERVER_URL
+     SERVER_URL,
+     EMAIL_FROM,
+     EMAIL_USER,
+     EMAIL_PASSWORD,
+     EMAIL_SERVICE,
+     SMTP_HOST,
+     SMTP_PORT,
+     SMTP_SECURE
      } = process.env;

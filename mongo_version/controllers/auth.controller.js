@@ -13,9 +13,12 @@ const signUp = async (req, res, next) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      throw new Error("All fields are required");
+      const error = new Error("All fields are required");
+      error.statusCode = 400;
+      throw error;
     }
-    const existingUser = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       const error = new Error("User already exists");
       error.statusCode = 409;
@@ -28,7 +31,7 @@ const signUp = async (req, res, next) => {
       [
         {
           name,
-          email,
+          email: normalizedEmail,
           password: hashedPassword,
         },
       ],
@@ -45,7 +48,7 @@ const signUp = async (req, res, next) => {
       message: "User created successfully",
       data: {
         JWT_TOKEN: token,
-        user: newUsers[0],
+        user: await User.findById(newUsers[0]._id).select('-password'),
       },
     });
   } catch (error) {
@@ -59,10 +62,13 @@ const signIn = async (req, res, next) => {
   try {
     const {email,password} = req.body;
     if (!email || !password) {
-      throw new Error("All fields are required");
+      const error = new Error("All fields are required");
+      error.statusCode = 400;
+      throw error;
     }
 
-    const user = await User.findOne({email});
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({email: normalizedEmail});
 
     if(!user){
       const error = new Error("User not found");
@@ -85,7 +91,7 @@ const signIn = async (req, res, next) => {
       message : "User signed in successfully",
       data:{
         token,
-        user
+        user: await User.findById(user._id).select('-password')
       }
     })
     
@@ -95,6 +101,15 @@ const signIn = async (req, res, next) => {
   }
 };
 
-const signOut = async (req, res, next) => {};
+const signOut = async (req, res, next) => {
+  try {
+    res.status(200).json({
+      success: true,
+      message: "User signed out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export default { signUp, signIn, signOut };

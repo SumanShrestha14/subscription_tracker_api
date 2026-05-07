@@ -12,7 +12,7 @@ const createSubscription = async (req, res, next) => {
     const { workflowRunId } = await workFlowClientInstance.trigger({
       url: `${SERVER_URL}/api/v1/workflows/subscriptions/reminders`,
       body: JSON.stringify({
-        subscription_Id: subscription._id.toString(),
+        subscriptionId: subscription._id.toString(),
       }),
       headers: {
         "content-type": "application/json",
@@ -31,7 +31,7 @@ const createSubscription = async (req, res, next) => {
 
 const getUserSubscription = async (req, res, next) => {
   try {
-    if (req.params.id != req.user.id) {
+    if (req.params.id !== req.user._id.toString()) {
       const error = new Error("Unauthorized");
       error.status = 401;
       throw error;
@@ -49,7 +49,7 @@ const getUserSubscription = async (req, res, next) => {
 
 const getAllSubscriptions = async (req, res, next) => {
   try {
-    const allSubscription = await Subscription.find();
+    const allSubscription = await Subscription.find({ user: req.user._id });
     res.status(200).json({
       success: true,
       data: allSubscription,

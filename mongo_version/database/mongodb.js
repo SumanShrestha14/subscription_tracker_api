@@ -3,7 +3,6 @@ import { DB_URI } from "../config/env.js";
 
 if(!DB_URI){
     throw new Error("Database URI is not defined in environment variables.");
-    process.exit(1);
 }
 
 const connectDB = async () => {

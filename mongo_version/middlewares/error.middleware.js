@@ -1,39 +1,32 @@
 const errorMiddleware = (err, req, res, next) => {
-  try {
-    let error = { ...err };
-    error.message = err.message;
-    console.error(error);
-    // mongoose bad ObjectId
+  let error = err;
+  let statusCode = err.statusCode || err.status || 500;
 
-    if (err.name == "CastError") {
-      const message = "Resource not found";
-      error = new Error(message);
-      error.statusCode = 404;
-    }
-    // mongoose duplicate key
-
-    if (err.code == 11000) {
-      const message = "Duplicate keys ";
-      error = new Error(message);
-      error.statusCode = 400;
-    }
-
-    // mongoose validation error
-    if (err.name == "ValidationError") {
-      const message = Object.values(err.errors).map((val) => val.message);
-      error = new Error(message);
-      error.statusCode = 400;
-    }
-
-    res
-      .status(error.statusCode || 500)
-      .json({
-        success: false,
-        error: error.message || "Internal Server Error",
-      });
-  } catch (error) {
-    next(error);
+  if (res.headersSent) {
+    return next(error);
   }
+
+  if (err.name === 'CastError') {
+    error = new Error('Resource not found');
+    statusCode = 404;
+  }
+
+  if (err.code === 11000) {
+    error = new Error('Duplicate key error');
+    statusCode = 400;
+  }
+
+  if (err.name === 'ValidationError') {
+    error = new Error(Object.values(err.errors).map((value) => value.message).join(', '));
+    statusCode = 400;
+  }
+
+  console.error(error);
+
+  return res.status(statusCode).json({
+    success: false,
+    message: error.message || 'Internal Server Error',
+  });
 };
 
 export default errorMiddleware;

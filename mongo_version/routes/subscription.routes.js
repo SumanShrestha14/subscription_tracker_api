@@ -4,8 +4,11 @@ import authorize from './../middlewares/auth.middleware.js';
 
 const subsRouter = Router();
 
+subsRouter.get('/upcoming-renewals' , (req, res)=>{
+    res.send({message : "GET upcoming subscription renewals"})
+})
+subsRouter.get('/user/:id' , authorize, subscription.getUserSubscription)
 subsRouter.get('/' ,authorize , subscription.getAllSubscriptions)
-subsRouter.get('/:id' ,authorize , subscription.getSubscriptionById)
 subsRouter.post('/', authorize ,subscription.createSubscription)
 // subsRouter.put('/:id' , ()=>{
 //     res.send({message : "UPDATE subscription by ID"})
@@ -13,12 +16,9 @@ subsRouter.post('/', authorize ,subscription.createSubscription)
 // subsRouter.delete('/:id' , ()=>{
 //     res.send({message : "DELETE subscription by ID"})
 // })
-subsRouter.get('/user/:id' , authorize, subscription.getUserSubscription)
-subsRouter.get('/:id/cancel' , ()=>{
+subsRouter.get('/:id/cancel' , (req, res)=>{
     res.send({message : "GET subscription cancellation status"})
 })
-subsRouter.get('/upcoming-renewals' , ()=>{
-    res.send({message : "GET upcoming subscription renewals"})
-})
+subsRouter.get('/:id' ,authorize , subscription.getSubscriptionById)
 
 export default subsRouter;

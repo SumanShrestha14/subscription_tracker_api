@@ -16,7 +16,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use(cookieParser());
-app.use(errorMiddleware);
 
 if(ARCJET_ENV != "development"){
     app.use(arcjetMiddleware);
@@ -31,10 +30,21 @@ app.get('/',(req,res)=>{
     res.send('Welcome to Subscription Tracker API');
 })
 
+app.use(errorMiddleware);
+
 // listening on port
-app.listen(PORT,async ()=>{
-    console.log(`Subscription tracker API is running on port ${PORT} in ${NODE_ENV} mode http://localhost:${PORT}`);
-    await connectDB();
-})
+const startServer = async ()=>{
+    try {
+        await connectDB();
+        app.listen(PORT, () => {
+            console.log(`Subscription tracker API is running on port ${PORT} in ${NODE_ENV} mode http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error('Failed to start server', error);
+        process.exit(1);
+    }
+}
+
+startServer();
 
 export default app;
